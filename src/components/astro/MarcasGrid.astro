@@ -1,6 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import exxanLogo from '../../assets/logos/Logos Rexeco-08.svg';
+import resimexLogo from '../../assets/logos/Logos Rexeco-07.svg';
+import econorteLogo from '../../assets/logos/Logos Rexeco-06.svg';
+
+const logoMap: Record<string, { src: string }> = {
+  exxan: exxanLogo,
+  resimex: resimexLogo,
+  econorte: econorteLogo,
+};
 
 const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.data.orden);
 ---
@@ -9,7 +18,7 @@ const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.d
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <div data-animate="up" class="mb-14">
-      <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+      <p class="text-white font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
         NUESTRAS EMPRESAS
       </p>
       <h2 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight max-w-2xl">
@@ -23,7 +32,7 @@ const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.d
           data-animate="up"
           style={`transition-delay: ${i * 0.12}s`}
           href={`/${marca.data.slug}`}
-          class="group block bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rexeco-red transition-all duration-300 overflow-hidden"
+          class="group block bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden"
         >
           <div class="overflow-hidden">
             <Image
@@ -35,11 +44,10 @@ const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.d
             />
           </div>
           <div class="p-6">
-            <div class="h-10 mb-4 flex items-center">
-              <Image
-                src={marca.data.logoImage}
+            <div class={`${marca.data.slug === 'econorte' ? 'h-6' : 'h-4'} mb-4 flex items-center`}>
+              <img
+                src={logoMap[marca.data.slug].src}
                 alt={`Logo ${marca.data.nombre}`}
-                height={40}
                 class="h-full w-auto object-contain brightness-0 invert"
               />
             </div>
@@ -49,7 +57,7 @@ const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.d
             <p class="text-white/60 text-sm leading-relaxed mb-4">
               {marca.data.tagline}
             </p>
-            <span class="inline-flex items-center gap-2 text-rexeco-red font-heading font-semibold text-sm uppercase tracking-wide group-hover:gap-3 transition-all">
+            <span class="inline-flex items-center gap-2 text-white font-heading font-semibold text-sm uppercase tracking-wide group-hover:gap-3 transition-all">
               Ver más
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />

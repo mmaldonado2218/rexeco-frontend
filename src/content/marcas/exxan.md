@@ -5,7 +5,6 @@ tagline: Compra y valorización de metales ferrosos
 descripcionCorta: Transformamos grandes volúmenes de chatarra en oportunidades reales para tu negocio.
 heroImage: ../../assets/hero/exxan-hero.png
 cardImage: ../../assets/cards/card-exxan.png
-logoImage: ../../assets/logos/logo-exxan-alt.png
 propuestaValor:
   - titulo: Recepción rápida
     descripcion: Recibe una valorización rápida y segura de tus materiales.
@@ -22,14 +21,21 @@ queHacemos:
   - Gestión logística
   - Comercialización de metales reciclados
 materialesRecibimos:
-  - Chatarra ferrosa industrial
-  - Residuos metálicos de construcción
-  - Excedentes de producción
-  - Equipos y maquinaria en desuso
+  - titulo: Chatarra ferrosa industrial
+    descripcion: Vigas, perfiles, chapas, tornería y todo tipo de acero de proceso industrial
+  - titulo: Residuos metálicos de construcción
+    descripcion: Fierros de construcción, estructuras metálicas, marcos y rejas
+  - titulo: Excedentes de producción
+    descripcion: Recortes, rebabas y sobrantes metálicos de líneas de manufactura
+  - titulo: Equipos y maquinaria en desuso
+    descripcion: Maquinaria obsoleta, motores, calderas y equipos fuera de servicio
 materialesNoRecibimos:
-  - Materiales con asbesto
-  - Residuos peligrosos sin certificación
-  - Metales no ferrosos (ver Resimex)
+  - titulo: Materiales con asbesto
+    descripcion: Fibrocemento, planchas de asbesto, materiales aislantes con amianto
+  - titulo: Residuos peligrosos sin certificación
+    descripcion: Sustancias químicas, tóxicas, corrosivas o inflamables sin documentación
+  - titulo: Metales no ferrosos
+    descripcion: Cobre, aluminio, bronce y similares — derivalos a Resimex
 mision: Gestionar grandes volúmenes de metales ferrosos mediante procesos ágiles, seguros y rentables, asegurando continuidad operativa y confianza.
 vision: Ser líderes en la gestión de metales ferrosos en Chile, destacando por eficiencia y confiabilidad.
 orden: 1

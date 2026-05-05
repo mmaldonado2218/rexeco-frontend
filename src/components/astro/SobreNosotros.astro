@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import cardImg from '../../assets/cards/card-grupo-rexeco.png';
+import cardImg from '../../assets/hero/VLK04292.jpg';
 ---
 
 <section id="nosotros" class="py-20 lg:py-28 bg-white">
@@ -35,7 +35,7 @@ import cardImg from '../../assets/cards/card-grupo-rexeco.png';
 
       <!-- Columna derecha: card con imagen -->
       <div data-animate="up" class="space-y-6" style="transition-delay: 0.15s">
-        <div class="bg-rexeco-dark overflow-hidden">
+        <div class="overflow-hidden rounded-xl" style="background-color: #263970">
           <Image
             src={cardImg}
             alt="Grupo Rexeco - Instalaciones"
@@ -45,10 +45,13 @@ import cardImg from '../../assets/cards/card-grupo-rexeco.png';
           />
           <div class="p-6">
             <h3 class="font-heading font-bold text-white text-xl uppercase tracking-wide mb-3">
-              Cada una de nuestras empresas
+              Que pesen tus bolsillos
             </h3>
+            <p class="text-white/70 text-sm leading-relaxed mb-3">
+              Reciclamos de manera responsable a distintos países con una infraestructura avanzada en cada paso de nuestro proceso.
+            </p>
             <p class="text-white/70 text-sm leading-relaxed">
-              Exportamos toneladas de materiales mensuales a distintos países, con infraestructura avanzada en cada paso de nuestros procesos.
+              Nuestro sistema de pago rápido y efectivo hace que cientos de proveedores confíen en nosotros.
             </p>
           </div>
         </div>

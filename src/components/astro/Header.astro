@@ -1,7 +1,6 @@
 ---
-import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import logo from '../../assets/logos/rexeco-r1.png';
+import logo from '../../assets/logos/Logos Rexeco-01.svg';
 import MobileMenu from '../react/MobileMenu';
 import { SITE } from '../../data/site';
 
@@ -19,12 +18,11 @@ const activeLogo = logoOverride ?? logo;
 
       <!-- Logo -->
       <a href="/" aria-label="Grupo Rexeco - Inicio" class="shrink-0">
-        <Image
-          src={activeLogo}
+        <img
+          src={activeLogo.src}
           alt="Grupo Rexeco"
-          height={56}
-          quality={100}
-          class="h-12 lg:h-14 w-auto"
+          class="h-16 lg:h-20 w-auto"
+          loading="eager"
         />
       </a>
 

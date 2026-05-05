@@ -2,18 +2,29 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import { SITE } from '../../data/site';
+import exxanLogo from '../../assets/logos/Logos Rexeco-08.svg';
+import resimexLogo from '../../assets/logos/Logos Rexeco-07.svg';
+import econorteLogo from '../../assets/logos/Logos Rexeco-06.svg';
+
+const logoMap: Record<string, { src: string }> = {
+  exxan: exxanLogo,
+  resimex: resimexLogo,
+  econorte: econorteLogo,
+};
 
 interface Props {
   marca: CollectionEntry<'marcas'>;
 }
 const { marca } = Astro.props;
+const marcaLogo = logoMap[marca.data.slug];
 ---
 
 <section class="relative h-[60vh] min-h-[420px] max-h-[700px] overflow-hidden bg-rexeco-dark">
   <Image
     src={marca.data.heroImage}
     alt={`${marca.data.nombre} - ${marca.data.tagline}`}
-    class="absolute inset-0 w-full h-full object-cover object-center"
+    class="absolute inset-0 w-full h-full object-cover"
+    style={marca.data.slug === 'exxan' ? 'object-position: center top !important' : ''}
     widths={[768, 1280, 1920]}
     sizes="100vw"
     fetchpriority="high"
@@ -24,10 +35,9 @@ const { marca } = Astro.props;
   <div class="relative z-10 h-full flex items-end">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12">
       <!-- Logo marca -->
-      <Image
-        src={marca.data.logoImage}
+      <img
+        src={marcaLogo.src}
         alt={`Logo ${marca.data.nombre}`}
-        height={36}
         class="h-9 w-auto object-contain mb-4 brightness-0 invert"
       />
       <h1 data-animate="up" class="font-heading font-bold text-white text-4xl sm:text-5xl lg:text-6xl uppercase tracking-wide mb-4">

@@ -12,7 +12,7 @@ const marcas = defineCollection({
       descripcionCorta: z.string(),
       heroImage: image(),
       cardImage: image(),
-      logoImage: image(),
+      logoImage: z.string().optional(),
       propuestaValor: z.array(
         z.object({
           titulo: z.string(),
@@ -20,8 +20,22 @@ const marcas = defineCollection({
         })
       ),
       queHacemos: z.array(z.string()),
-      materialesRecibimos: z.array(z.string()).optional(),
-      materialesNoRecibimos: z.array(z.string()).optional(),
+      materialesRecibimos: z
+        .array(
+          z.union([
+            z.string(),
+            z.object({ titulo: z.string(), descripcion: z.string() }),
+          ])
+        )
+        .optional(),
+      materialesNoRecibimos: z
+        .array(
+          z.union([
+            z.string(),
+            z.object({ titulo: z.string(), descripcion: z.string() }),
+          ])
+        )
+        .optional(),
       mision: z.string(),
       vision: z.string(),
       orden: z.number(),

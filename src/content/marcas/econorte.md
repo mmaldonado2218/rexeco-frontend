@@ -5,7 +5,6 @@ tagline: Gestión integral de residuos industriales y mineros
 descripcionCorta: Años de experiencia en manejo, reciclaje y disposición final de residuos peligrosos y no peligrosos.
 heroImage: ../../assets/hero/econorte-hero.png
 cardImage: ../../assets/cards/card-econorte.png
-logoImage: ../../assets/logos/econorte-r0.png
 propuestaValor:
   - titulo: Experiencia comprobada
     descripcion: Años de trayectoria en residuos industriales y mineros peligrosos y no peligrosos.
@@ -21,10 +20,14 @@ queHacemos:
   - Transporte de los Residuos (con resolución sanitaria)
   - Venta Nacional e Internacional de los materiales reciclados
 materialesRecibimos:
-  - Residuos industriales peligrosos certificados
-  - Residuos mineros
-  - Metales reciclables en general
-  - Excedentes de procesos industriales
+  - titulo: Residuos industriales peligrosos certificados
+    descripcion: Solventes, aceites, pinturas y sustancias peligrosas con documentación vigente
+  - titulo: Residuos mineros
+    descripcion: Escorias, relaves y residuos de procesos extractivos y de concentración
+  - titulo: Metales reciclables en general
+    descripcion: Ferrosos, no ferrosos y aleaciones provenientes de procesos industriales
+  - titulo: Excedentes de procesos industriales
+    descripcion: Subproductos, recortes y materiales fuera de especificación de líneas de producción
 mision: Realizar una gestión integral de reciclaje, vigilando la seguridad y bienestar de nuestro capital humano, siendo un aliado estratégico de nuestros clientes para la disposición responsable de sus residuos.
 vision: Convertirnos en referente nacional en la gestión de residuos industriales y mineros, con procesos seguros, certificados y ambientalmente responsables.
 orden: 3
