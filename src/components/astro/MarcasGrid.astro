@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.data.orden);
+---
+
+<section class="py-20 lg:py-28 bg-rexeco-dark">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div data-animate="up" class="mb-14">
+      <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+        NUESTRAS EMPRESAS
+      </p>
+      <h2 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight max-w-2xl">
+        Cada una de nuestras empresas
+      </h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {marcas.map((marca, i) => (
+        <a
+          data-animate="up"
+          style={`transition-delay: ${i * 0.12}s`}
+          href={`/${marca.data.slug}`}
+          class="group block bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rexeco-red transition-all duration-300 overflow-hidden"
+        >
+          <div class="overflow-hidden">
+            <Image
+              src={marca.data.cardImage}
+              alt={`${marca.data.nombre} - ${marca.data.tagline}`}
+              class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"
+              widths={[400, 700]}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
+          <div class="p-6">
+            <div class="h-10 mb-4 flex items-center">
+              <Image
+                src={marca.data.logoImage}
+                alt={`Logo ${marca.data.nombre}`}
+                height={40}
+                class="h-full w-auto object-contain brightness-0 invert"
+              />
+            </div>
+            <h3 class="font-heading font-bold text-white text-xl uppercase tracking-wide mb-2">
+              {marca.data.nombre}
+            </h3>
+            <p class="text-white/60 text-sm leading-relaxed mb-4">
+              {marca.data.tagline}
+            </p>
+            <span class="inline-flex items-center gap-2 text-rexeco-red font-heading font-semibold text-sm uppercase tracking-wide group-hover:gap-3 transition-all">
+              Ver más
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

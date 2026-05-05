@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import logoGrupo from '../../assets/logos/grupo-rexeco.png';
+import logoEcoNorte from '../../assets/logos/eco-norte.png';
+import logoResimex from '../../assets/logos/resimex.png';
+import logoExxan from '../../assets/logos/exxan.png';
+
+const logos = [
+  { src: logoGrupo,    alt: 'Grupo Rexeco' },
+  { src: logoEcoNorte, alt: 'EcoNorte' },
+  { src: logoResimex,  alt: 'Resimex' },
+  { src: logoExxan,    alt: 'Exxan' },
+];
+---
+
+<section class="py-12 bg-white border-y border-gray-100 overflow-hidden">
+  <div class="flex">
+    <!-- Track duplicado para loop infinito -->
+    <div class="marquee-track flex items-center gap-16 shrink-0">
+      {[...logos, ...logos].map((logo, i) => (
+        <div class="flex items-center shrink-0 px-8">
+          <Image
+            src={logo.src}
+            alt={logo.alt}
+            height={48}
+            class="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

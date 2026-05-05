@@ -1,0 +1,180 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import ContactBlock from './ContactBlock.astro';
+import { SITE } from '../../data/site';
+
+interface Props {
+  marca: CollectionEntry<'marcas'>;
+}
+const { marca } = Astro.props;
+const { data: d } = marca;
+---
+
+<!-- Descripción general -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+      <div data-animate="left">
+        <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+          ¿Qué es {d.nombre}?
+        </p>
+        <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl leading-tight mb-6">
+          ¿Qué hacemos?
+        </h2>
+        <p class="text-rexeco-text leading-relaxed mb-8">{d.descripcionCorta}</p>
+
+        <ul class="space-y-3">
+          {d.queHacemos.map((item) => (
+            <li class="flex items-start gap-3">
+              <span class="flex-shrink-0 w-5 h-5 bg-rexeco-red flex items-center justify-center mt-0.5">
+                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              </span>
+              <span class="text-rexeco-text text-sm">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Imagen secundaria + CTA -->
+      <div data-animate="right" class="space-y-6">
+        <Image
+          src={d.cardImage}
+          alt={d.nombre}
+          class="w-full h-72 object-cover"
+          widths={[400, 700]}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
+        <div class="bg-rexeco-dark p-6">
+          <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-widest mb-2">
+            ¿Tienes residuos para vender?
+          </p>
+          <h3 class="font-heading font-bold text-white text-xl mb-4">
+            Contáctanos directamente
+          </h3>
+          <a
+            href={SITE.whatsapp.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 bg-rexeco-red hover:bg-red-700 text-white font-heading font-semibold text-sm uppercase tracking-wide px-6 py-3 transition-colors"
+          >
+            Escribir por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Propuesta de valor -->
+<section class="py-16 bg-rexeco-light">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div data-animate="up" class="mb-10">
+      <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-3">
+        PROPUESTA DE VALOR
+      </p>
+      <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl leading-tight">
+        ¿Por qué trabajar con nosotros?
+      </h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {d.propuestaValor.map((pv, i) => (
+        <div data-animate="up" style={`transition-delay: ${i * 0.1}s`} class="bg-white p-6 border-b-2 border-rexeco-red">
+          <h3 class="font-heading font-bold text-rexeco-dark text-base uppercase tracking-wide mb-3">
+            {pv.titulo}
+          </h3>
+          <p class="text-rexeco-text text-sm leading-relaxed">{pv.descripcion}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- Materiales (si aplica) -->
+{(d.materialesRecibimos || d.materialesNoRecibimos) && (
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 gap-10">
+        {d.materialesRecibimos && (
+          <div data-animate="left">
+            <h2 class="font-heading font-bold text-rexeco-dark text-2xl uppercase tracking-wide mb-6">
+              ¿Qué materiales recibimos?
+            </h2>
+            <ul class="space-y-2">
+              {d.materialesRecibimos.map((m) => (
+                <li class="flex items-center gap-3">
+                  <span class="w-2 h-2 bg-rexeco-red shrink-0"></span>
+                  <span class="text-rexeco-text text-sm">{m}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {d.materialesNoRecibimos && (
+          <div data-animate="right">
+            <h2 class="font-heading font-bold text-rexeco-dark text-2xl uppercase tracking-wide mb-6">
+              ¿Qué materiales NO recibimos?
+            </h2>
+            <ul class="space-y-2">
+              {d.materialesNoRecibimos.map((m) => (
+                <li class="flex items-center gap-3">
+                  <span class="w-2 h-2 bg-gray-300 shrink-0"></span>
+                  <span class="text-rexeco-text text-sm">{m}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+<!-- Misión y Visión -->
+<section class="py-16 bg-rexeco-dark">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div data-animate="up" class="mb-10">
+      <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-3">
+        MISIÓN Y VISIÓN
+      </p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-8">
+      <div data-animate="left" class="border-l-4 border-rexeco-red pl-6">
+        <h3 class="font-heading font-bold text-white text-lg uppercase tracking-wide mb-3">Misión</h3>
+        <p class="text-white/70 text-sm leading-relaxed">{d.mision}</p>
+      </div>
+      <div data-animate="right" class="border-l-4 border-white/20 pl-6">
+        <h3 class="font-heading font-bold text-white text-lg uppercase tracking-wide mb-3">Visión</h3>
+        <p class="text-white/70 text-sm leading-relaxed">{d.vision}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contacto -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 items-start">
+      <div data-animate="left">
+        <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+          CONTACTO
+        </p>
+        <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl leading-tight mb-8">
+          ¿Tienes material para vender?
+        </h2>
+        <ContactBlock />
+      </div>
+      <div data-animate="right" class="bg-rexeco-light p-8 lg:p-10">
+        <p class="font-heading font-semibold text-rexeco-dark text-sm uppercase tracking-widest mb-6">
+          Grupo Rexeco
+        </p>
+        <p class="text-rexeco-text leading-relaxed text-sm">
+          Grupo de empresas especializadas en reciclaje y gestión integral de residuos, comprometidos con la economía circular y el cuidado del medio ambiente.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

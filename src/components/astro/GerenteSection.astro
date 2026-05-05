@@ -1,0 +1,77 @@
+---
+import { Image } from 'astro:assets';
+import gerenteImg from '../../assets/people/gerente.jpg';
+---
+
+<section class="py-20 lg:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+      <!-- Texto -->
+      <div data-animate="left" class="order-2 lg:order-1">
+        <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+          ALEXIS ROVIRA — GERENTE GENERAL
+        </p>
+        <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl lg:text-5xl leading-tight mb-8">
+          Nos dedicamos a la gestión de residuos metálicos ferrosos y no ferrosos, de forma absolutamente responsable.
+        </h2>
+
+        <div class="space-y-6">
+          <!-- Relaciones Comerciales -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-rexeco-red flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-heading font-bold text-rexeco-dark text-lg uppercase tracking-wide mb-2">
+                Relaciones Comerciales
+              </h3>
+              <p class="text-rexeco-text text-sm leading-relaxed">
+                La lealtad hacia nuestros clientes y proveedores es un principio fundamental. Las relaciones comerciales se sustentan en la confianza, la transparencia y la eficiencia.
+              </p>
+            </div>
+          </div>
+
+          <!-- Objetivo -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-rexeco-dark flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 002.288-4.042 1.087 1.087 0 00-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 01-.98-.314l-.295-.295a1.125 1.125 0 010-1.591l.13-.132a1.125 1.125 0 011.3-.21l.603.302a.809.809 0 001.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 001.528-1.732l.146-.292M6.115 5.19A9 9 0 1017.18 4.64M6.115 5.19A8.965 8.965 0 0112 3c1.929 0 3.716.607 5.18 1.64" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-heading font-bold text-rexeco-dark text-lg uppercase tracking-wide mb-2">
+                Objetivo
+              </h3>
+              <p class="text-rexeco-text text-sm leading-relaxed">
+                Lograr la plena satisfacción de nuestros clientes y proveedores, fortaleciendo las relaciones a través de su fidelización y complacencia.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Imagen gerente -->
+      <div data-animate="right" class="order-1 lg:order-2 flex justify-center lg:justify-end">
+        <div class="w-full max-w-sm lg:max-w-md overflow-hidden rounded-2xl">
+          <div class="aspect-[4/5] overflow-hidden">
+            <Image
+              src={gerenteImg}
+              alt="Alexis Rovira - Gerente General de Grupo Rexeco"
+              width={600}
+              height={750}
+              class="w-full h-full object-cover object-top"
+            />
+          </div>
+          <div class="bg-rexeco-dark text-white px-6 py-5">
+            <p class="font-heading font-bold text-lg uppercase tracking-widest">Alexis Rovira</p>
+            <p class="font-heading font-semibold text-rexeco-red text-sm uppercase tracking-wide mt-1">Gerente General</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

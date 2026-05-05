@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import cardImg from '../../assets/cards/card-grupo-rexeco.png';
+---
+
+<section id="nosotros" class="py-20 lg:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Kicker -->
+    <p data-animate="up" class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+      SOBRE NOSOTROS
+    </p>
+
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+
+      <!-- Columna izquierda: texto -->
+      <div data-animate="up">
+        <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl lg:text-5xl leading-tight mb-8">
+          Como Grupo Rexeco nos esforzamos por convertir los residuos en recursos valiosos
+        </h2>
+
+        <!-- Stat destacado -->
+        <div class="flex items-end gap-3 mb-8">
+          <span class="font-heading font-bold text-rexeco-red text-6xl lg:text-7xl leading-none">25+</span>
+          <span class="font-heading font-semibold text-rexeco-dark text-xl leading-tight mb-2">años de<br />experiencia</span>
+        </div>
+
+        <p class="text-rexeco-text leading-relaxed mb-6">
+          Somos un grupo especializado en reciclaje y gestión de residuos, importante eslabón dentro de la economía circular y el cuidado del medio ambiente.
+        </p>
+        <p class="text-rexeco-text leading-relaxed">
+          Tiene un enfoque especializado, permitiéndonos ofrecer soluciones para quienes quieren avanzar en el camino de la sostenibilidad, con el manejo de residuos ferrosos y no ferrosos. Contamos con tecnología eficiente y un equipo humano experto.
+        </p>
+      </div>
+
+      <!-- Columna derecha: card con imagen -->
+      <div data-animate="up" class="space-y-6" style="transition-delay: 0.15s">
+        <div class="bg-rexeco-dark overflow-hidden">
+          <Image
+            src={cardImg}
+            alt="Grupo Rexeco - Instalaciones"
+            class="w-full h-56 object-cover"
+            widths={[400, 700]}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+          <div class="p-6">
+            <h3 class="font-heading font-bold text-white text-xl uppercase tracking-wide mb-3">
+              Cada una de nuestras empresas
+            </h3>
+            <p class="text-white/70 text-sm leading-relaxed">
+              Exportamos toneladas de materiales mensuales a distintos países, con infraestructura avanzada en cada paso de nuestros procesos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bloque Sostenibilidad -->
+        <div class="border-l-4 border-rexeco-red pl-6 py-2">
+          <h3 class="font-heading font-bold text-rexeco-dark text-xl uppercase tracking-wide mb-3">
+            Sostenibilidad
+          </h3>
+          <p class="text-rexeco-text text-sm leading-relaxed">
+            Grupo Rexeco ha asumido un rol activo en la promoción de la sustentabilidad mediante soluciones innovadoras en la gestión de residuos. Nuestro compromiso con el medio ambiente se manifiesta a través de un enfoque basado en la economía circular, donde los residuos no se ven como desechos finales, sino como recursos con potencial de valorización.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

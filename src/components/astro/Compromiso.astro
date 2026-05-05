@@ -1,0 +1,81 @@
+---
+import { Image } from 'astro:assets';
+import resimexImg from '../../assets/hero/resimex-hero.png';
+
+const tarjetas = [
+  {
+    titulo: 'Procesos',
+    descripcion: 'Nuestra infraestructura avanzada respalda cada paso de nuestros procesos en la gestión de chatarra metálica.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>`,
+  },
+  {
+    titulo: 'Sostenibilidad',
+    descripcion: 'Damos nueva vida a los metales desechados, cerrando el ciclo de los materiales en la economía circular.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>`,
+  },
+  {
+    titulo: 'Colaboración',
+    descripcion: 'Fomentamos alianzas estratégicas con nuestros clientes, proveedores y comunidades.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>`,
+  },
+  {
+    titulo: 'Compromiso',
+    descripcion: 'Trabajamos con responsabilidad y ética, cumpliendo con los más altos estándares de calidad y seguridad.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 013.15 0V15M6.9 7.575a1.575 1.575 0 10-3.15 0v8.175a6.75 6.75 0 006.75 6.75h2.018a5.25 5.25 0 003.712-1.538l1.732-1.732a5.25 5.25 0 001.538-3.712l.003-2.024a.668.668 0 01.198-.471 1.575 1.575 0 10-2.228-2.228 3.818 3.818 0 00-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0116.35 15m.002 0h-.002" /></svg>`,
+  },
+];
+---
+
+<section id="eligenos" class="py-20 lg:py-28 bg-rexeco-light">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header sección -->
+    <div data-animate="up" class="mb-14">
+      <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
+        COMPROMISO
+      </p>
+      <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl lg:text-5xl leading-tight max-w-2xl">
+        Por qué elegirnos
+      </h2>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+      <!-- Grid de 4 tarjetas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {tarjetas.map((t, i) => (
+          <div data-animate="up" style={`transition-delay: ${i * 0.1}s`} class="bg-white p-6 border-b-2 border-rexeco-red">
+            <div class="text-rexeco-red mb-4" set:html={t.icon} />
+            <h3 class="font-heading font-bold text-rexeco-dark text-lg uppercase tracking-wide mb-3">
+              {t.titulo}
+            </h3>
+            <p class="text-rexeco-text text-sm leading-relaxed">
+              {t.descripcion}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Imagen con tarjeta overlay -->
+      <div data-animate="right" class="relative">
+        <Image
+          src={resimexImg}
+          alt="Grupo Rexeco - Operaciones"
+          class="w-full h-80 lg:h-[480px] object-cover"
+          widths={[400, 700, 1000]}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
+        <!-- Tarjeta superpuesta -->
+        <div class="absolute bottom-0 left-0 right-0 bg-rexeco-dark/90 p-6">
+          <h3 class="font-heading font-bold text-white text-lg uppercase tracking-wide mb-2">
+            Grupo Rexeco
+          </h3>
+          <p class="text-white/70 text-sm leading-relaxed">
+            Somos un grupo de empresas especializadas en reciclaje y gestión integral de residuos, comprometidos con la economía circular.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

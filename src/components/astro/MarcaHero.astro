@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { SITE } from '../../data/site';
+
+interface Props {
+  marca: CollectionEntry<'marcas'>;
+}
+const { marca } = Astro.props;
+---
+
+<section class="relative h-[60vh] min-h-[420px] max-h-[700px] overflow-hidden bg-rexeco-dark">
+  <Image
+    src={marca.data.heroImage}
+    alt={`${marca.data.nombre} - ${marca.data.tagline}`}
+    class="absolute inset-0 w-full h-full object-cover object-center"
+    widths={[768, 1280, 1920]}
+    sizes="100vw"
+    fetchpriority="high"
+    loading="eager"
+  />
+  <div class="absolute inset-0 bg-rexeco-dark/70"></div>
+
+  <div class="relative z-10 h-full flex items-end">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12">
+      <!-- Logo marca -->
+      <Image
+        src={marca.data.logoImage}
+        alt={`Logo ${marca.data.nombre}`}
+        height={36}
+        class="h-9 w-auto object-contain mb-4 brightness-0 invert"
+      />
+      <h1 data-animate="up" class="font-heading font-bold text-white text-4xl sm:text-5xl lg:text-6xl uppercase tracking-wide mb-4">
+        {marca.data.nombre}
+      </h1>
+      <p data-animate="up" style="transition-delay: 0.1s" class="text-white/80 text-lg sm:text-xl max-w-xl mb-8">
+        {marca.data.tagline}
+      </p>
+      <a data-animate="up" style="transition-delay: 0.2s"
+        href={SITE.whatsapp.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 bg-rexeco-red hover:bg-red-700 text-white font-heading font-bold uppercase tracking-wide px-7 py-3.5 text-sm transition-colors"
+      >
+        Contactar ahora
+      </a>
+    </div>
+  </div>
+</section>

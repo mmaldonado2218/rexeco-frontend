@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MarcaHero from '../components/astro/MarcaHero.astro';
+import MarcaContenido from '../components/astro/MarcaContenido.astro';
+import MarcasGrid from '../components/astro/MarcasGrid.astro';
+
+export async function getStaticPaths() {
+  const marcas = await getCollection('marcas');
+  return marcas.map((marca) => ({
+    params: { marca: marca.data.slug },
+    props: { marca },
+  }));
+}
+
+const { marca } = Astro.props;
+const { Content } = await render(marca);
+---
+
+<BaseLayout
+  title={`${marca.data.nombre} – Grupo Rexeco`}
+  description={marca.data.descripcionCorta}
+>
+  <MarcaHero marca={marca} />
+  <MarcaContenido marca={marca} />
+  <MarcasGrid />
+</BaseLayout>
