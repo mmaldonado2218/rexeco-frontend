@@ -1,14 +1,24 @@
 ---
 import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import exxanLogo from '../../assets/logos/Logos Rexeco-08.svg';
 import resimexLogo from '../../assets/logos/Logos Rexeco-07.svg';
 import econorteLogo from '../../assets/logos/Logos Rexeco-06.svg';
+import exxanCard from '../../assets/hero/DSC02751.jpg';
+import resimexCard from '../../assets/hero/DSC02799.jpg';
+import econorteCard from '../../assets/hero/VLK04222.jpg';
 
 const logoMap: Record<string, { src: string }> = {
   exxan: exxanLogo,
   resimex: resimexLogo,
   econorte: econorteLogo,
+};
+
+const cardImageMap: Record<string, ImageMetadata> = {
+  exxan: exxanCard,
+  resimex: resimexCard,
+  econorte: econorteCard,
 };
 
 const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.data.orden);
@@ -36,7 +46,7 @@ const marcas = (await getCollection('marcas')).sort((a, b) => a.data.orden - b.d
         >
           <div class="overflow-hidden">
             <Image
-              src={marca.data.cardImage}
+              src={cardImageMap[marca.data.slug]}
               alt={`${marca.data.nombre} - ${marca.data.tagline}`}
               class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"
               widths={[400, 700]}
