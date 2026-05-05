@@ -19,7 +19,8 @@ queHacemos:
   - Evaluación de materiales
   - Clasificación técnica avanzada
   - Separación por pureza
-  - Comercialización estratégica
+  - Valorización
+  - Exportación
 materialesRecibimos:
   - Cobre
   - Aluminio

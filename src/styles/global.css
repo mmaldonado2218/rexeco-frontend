@@ -14,27 +14,24 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   font-family: var(--font-body);
   color: var(--color-rexeco-text);
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Hero slider CSS-only crossfade */
-@keyframes slider-fade {
-  0%, 30%   { opacity: 1; }
-  33%, 96%  { opacity: 0; }
-  100%      { opacity: 1; }
+/* Hero shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
-
-.slider-img:nth-child(1) { animation: slider-fade 25.5s ease-in-out 0s infinite; }
-.slider-img:nth-child(2) { animation: slider-fade 25.5s ease-in-out 8.5s infinite; }
-.slider-img:nth-child(3) { animation: slider-fade 25.5s ease-in-out 17s infinite; }
 
 /* Marquee animation */
 @keyframes marquee {

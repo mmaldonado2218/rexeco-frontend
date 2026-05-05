@@ -27,7 +27,7 @@ export default function MobileMenu({ nav, whatsapp }: Props) {
         onClick={() => setOpen(!open)}
         aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
         aria-expanded={open}
-        className="p-2 text-white"
+        className="p-2 text-rexeco-navy"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {open ? (

@@ -4,37 +4,45 @@ import slider1 from '../../assets/hero/home-slider-1.jpg';
 import slider2 from '../../assets/hero/home-slider-2.jpg';
 import slider3 from '../../assets/hero/home-slider-3.jpg';
 import { SITE } from '../../data/site';
+
+const slides = [
+  { img: slider1, alt: 'Grupo Rexeco – Instalaciones' },
+  { img: slider2, alt: 'Grupo Rexeco – Operaciones' },
+  { img: slider3, alt: 'Grupo Rexeco – Reciclaje' },
+];
 ---
 
-<section class="relative h-[92vh] min-h-[560px] max-h-[900px] overflow-hidden bg-rexeco-dark">
-  <!-- Imágenes slider CSS-only -->
-  <div class="absolute inset-0">
-    <Image
-      src={slider1}
-      alt="Grupo Rexeco - Instalaciones"
-      class="slider-img absolute inset-0 w-full h-full object-cover object-center opacity-0"
-      widths={[768, 1280, 1920]}
-      sizes="100vw"
-      fetchpriority="high"
-      loading="eager"
-    />
-    <Image
-      src={slider2}
-      alt="Grupo Rexeco - Operaciones"
-      class="slider-img absolute inset-0 w-full h-full object-cover object-center opacity-0"
-      widths={[768, 1280, 1920]}
-      sizes="100vw"
-    />
-    <Image
-      src={slider3}
-      alt="Grupo Rexeco - Reciclaje"
-      class="slider-img absolute inset-0 w-full h-full object-cover object-center opacity-0"
-      widths={[768, 1280, 1920]}
-      sizes="100vw"
-    />
-    <!-- Overlay oscuro -->
-    <div class="absolute inset-0 bg-rexeco-dark/60"></div>
+<section
+  id="hero-slider"
+  class="relative h-[92vh] min-h-[560px] max-h-[900px] overflow-hidden bg-rexeco-dark"
+>
+  <!-- Shimmer placeholder visible hasta que cargue la primera imagen -->
+  <div id="hero-shimmer" class="absolute inset-0 z-[5] bg-rexeco-dark">
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_1.5s_ease-in-out_infinite] bg-[length:200%_100%]"></div>
   </div>
+
+  <!-- Imágenes -->
+  {slides.map((slide, i) => (
+    <div
+      class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
+      aria-hidden={i !== 0 ? 'true' : 'false'}
+    >
+      <Image
+        src={slide.img}
+        alt={slide.alt}
+        class="w-full h-full object-cover object-center"
+        widths={[768, 1280, 1920]}
+        sizes="100vw"
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : 'auto'}
+        quality={80}
+        {...(i === 0 ? { id: 'hero-first-img' } : {})}
+      />
+    </div>
+  ))}
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-rexeco-dark/60" />
 
   <!-- Contenido hero -->
   <div class="relative z-10 h-full flex items-center">
@@ -72,10 +80,98 @@ import { SITE } from '../../data/site';
     </div>
   </div>
 
-  <!-- Indicadores slider -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
-    <span class="w-8 h-1 bg-rexeco-red"></span>
-    <span class="w-8 h-1 bg-white/40"></span>
-    <span class="w-8 h-1 bg-white/40"></span>
+  <!-- Flecha anterior -->
+  <button
+    id="slider-prev"
+    aria-label="Imagen anterior"
+    class="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center bg-white/15 hover:bg-white/30 text-white backdrop-blur-sm transition-colors rounded-full"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Flecha siguiente -->
+  <button
+    id="slider-next"
+    aria-label="Imagen siguiente"
+    class="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center bg-white/15 hover:bg-white/30 text-white backdrop-blur-sm transition-colors rounded-full"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Dots -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+    {slides.map((_, i) => (
+      <button
+        class={`slider-dot h-1 w-8 transition-all duration-300 ${i === 0 ? 'bg-rexeco-red' : 'bg-white/40 hover:bg-white/70'}`}
+        aria-label={`Ir a imagen ${i + 1}`}
+        data-index={String(i)}
+      />
+    ))}
   </div>
 </section>
+
+<script>
+  // Ocultar shimmer cuando la primera imagen cargue
+  const firstImg = document.getElementById('hero-first-img') as HTMLImageElement | null;
+  const shimmer = document.getElementById('hero-shimmer');
+  if (shimmer && firstImg) {
+    const hide = () => {
+      shimmer.style.transition = 'opacity 0.4s ease';
+      shimmer.style.opacity = '0';
+      setTimeout(() => shimmer.remove(), 400);
+    };
+    if (firstImg.complete && firstImg.naturalWidth > 0) {
+      hide();
+    } else {
+      firstImg.addEventListener('load', hide, { once: true });
+      firstImg.addEventListener('error', hide, { once: true });
+    }
+  }
+
+  const INTERVAL = 8500;
+
+  const slides = document.querySelectorAll<HTMLElement>('.hero-slide');
+  const dots = document.querySelectorAll<HTMLElement>('.slider-dot');
+  let current = 0;
+  let timer: ReturnType<typeof setInterval>;
+
+  function goTo(index: number) {
+    slides[current].classList.replace('opacity-100', 'opacity-0');
+    slides[current].setAttribute('aria-hidden', 'true');
+    dots[current].classList.remove('bg-rexeco-red');
+    dots[current].classList.add('bg-white/40');
+
+    current = ((index % slides.length) + slides.length) % slides.length;
+
+    slides[current].classList.replace('opacity-0', 'opacity-100');
+    slides[current].setAttribute('aria-hidden', 'false');
+    dots[current].classList.remove('bg-white/40');
+    dots[current].classList.add('bg-rexeco-red');
+  }
+
+  function startTimer() {
+    timer = setInterval(() => goTo(current + 1), INTERVAL);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+
+  document.getElementById('slider-prev')?.addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  document.getElementById('slider-next')?.addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+
+  dots.forEach((dot) => {
+    dot.addEventListener('click', () => { goTo(Number(dot.dataset.index)); resetTimer(); });
+  });
+
+  const section = document.getElementById('hero-slider')!;
+  section.addEventListener('mouseenter', () => clearInterval(timer));
+  section.addEventListener('mouseleave', startTimer);
+
+  startTimer();
+</script>

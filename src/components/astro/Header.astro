@@ -1,8 +1,16 @@
 ---
 import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import logo from '../../assets/logos/rexeco-r1.png';
 import MobileMenu from '../react/MobileMenu';
 import { SITE } from '../../data/site';
+
+interface Props {
+  logoOverride?: ImageMetadata;
+}
+
+const { logoOverride } = Astro.props;
+const activeLogo = logoOverride ?? logo;
 ---
 
 <!-- Header full-width blanco, pegado al borde superior -->
@@ -12,7 +20,7 @@ import { SITE } from '../../data/site';
       <!-- Logo -->
       <a href="/" aria-label="Grupo Rexeco - Inicio" class="shrink-0">
         <Image
-          src={logo}
+          src={activeLogo}
           alt="Grupo Rexeco"
           height={56}
           quality={100}

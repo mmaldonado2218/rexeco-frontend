@@ -6,11 +6,13 @@ import Footer from '../components/astro/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  logoOverride?: ImageMetadata;
 }
 
 const {
   title = 'Grupo Rexeco – Somos un grupo especializado en reciclaje y gestión de residuos.',
   description = 'Grupo de empresas especializadas en reciclaje y gestión integral de residuos, comprometidos con la economía circular y el cuidado del medio ambiente.',
+  logoOverride,
 } = Astro.props;
 ---
 
@@ -28,9 +30,10 @@ const {
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
       rel="stylesheet"
     />
+    <slot name="head" />
   </head>
   <body class="bg-white">
-    <Header />
+    <Header logoOverride={logoOverride} />
     <main>
       <slot />
     </main>

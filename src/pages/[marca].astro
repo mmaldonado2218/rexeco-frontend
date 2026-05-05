@@ -1,9 +1,19 @@
 ---
 import { getCollection, render } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MarcaHero from '../components/astro/MarcaHero.astro';
 import MarcaContenido from '../components/astro/MarcaContenido.astro';
 import MarcasGrid from '../components/astro/MarcasGrid.astro';
+import exxanLogo from '../assets/logos/logo-exxan-alt.png';
+import resimexLogo from '../assets/logos/logo-resimex-alt.png';
+import econorteLogo from '../assets/logos/econorte-r0.png';
+
+const logoMap: Record<string, ImageMetadata> = {
+  exxan: exxanLogo,
+  resimex: resimexLogo,
+  econorte: econorteLogo,
+};
 
 export async function getStaticPaths() {
   const marcas = await getCollection('marcas');
@@ -15,11 +25,13 @@ export async function getStaticPaths() {
 
 const { marca } = Astro.props;
 const { Content } = await render(marca);
+const marcaLogo = logoMap[marca.data.slug];
 ---
 
 <BaseLayout
   title={`${marca.data.nombre} – Grupo Rexeco`}
   description={marca.data.descripcionCorta}
+  logoOverride={marcaLogo}
 >
   <MarcaHero marca={marca} />
   <MarcaContenido marca={marca} />

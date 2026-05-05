@@ -19,6 +19,7 @@ queHacemos:
   - Recepción segura de materiales
   - Clasificación técnica
   - Procesamiento y compactación
+  - Gestión logística
   - Comercialización de metales reciclados
 materialesRecibimos:
   - Chatarra ferrosa industrial

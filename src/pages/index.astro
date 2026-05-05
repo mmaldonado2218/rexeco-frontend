@@ -1,28 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroSlider from '../components/react/HeroSlider';
+import HeroSlider from '../components/astro/HeroSlider.astro';
 import SobreNosotros from '../components/astro/SobreNosotros.astro';
 import Compromiso from '../components/astro/Compromiso.astro';
 import GerenteSection from '../components/astro/GerenteSection.astro';
 import MarquesinaLogos from '../components/astro/MarquesinaLogos.astro';
 import MarcasGrid from '../components/astro/MarcasGrid.astro';
-import { SITE } from '../data/site';
+import { getImage } from 'astro:assets';
 import slider1 from '../assets/hero/home-slider-1.jpg';
-import slider2 from '../assets/hero/home-slider-2.jpg';
-import slider3 from '../assets/hero/home-slider-3.jpg';
 
-const slides = [
-  { src: slider1.src, alt: 'Grupo Rexeco – Instalaciones' },
-  { src: slider2.src, alt: 'Grupo Rexeco – Operaciones' },
-  { src: slider3.src, alt: 'Grupo Rexeco – Reciclaje' },
-];
+const preloadSlide = await getImage({ src: slider1, width: 1280, format: 'webp', quality: 80 });
 ---
 
 <BaseLayout
   title="Grupo Rexeco – Somos un grupo especializado en reciclaje y gestión de residuos."
   description="Grupo de empresas especializadas en reciclaje y gestión integral de residuos, comprometidos con la economía circular y el cuidado del medio ambiente."
 >
-  <HeroSlider client:load slides={slides} whatsappUrl={SITE.whatsapp.url} />
+  <link slot="head" rel="preload" as="image" href={preloadSlide.src} type="image/webp" />
+  <HeroSlider />
   <SobreNosotros />
   <MarquesinaLogos />
   <Compromiso />
