@@ -3,7 +3,7 @@ slug: exxan
 nombre: EXXAN
 tagline: Compra y valorización de metales ferrosos
 descripcionCorta: Transformamos grandes volúmenes de chatarra en oportunidades reales para tu negocio.
-heroImage: ../../assets/hero/exxan-hero.png
+heroImage: ../../assets/hero/Exxan.jpg
 cardImage: ../../assets/cards/card-exxan.png
 propuestaValor:
   - titulo: Recepción rápida

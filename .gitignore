@@ -32,3 +32,6 @@ npm-debug.log*
 # Migration folder
 rexeco-migra/
 .vercel
+
+# Tooling local (agentes)
+.atl/

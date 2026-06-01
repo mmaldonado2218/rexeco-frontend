@@ -3,7 +3,7 @@ slug: resimex
 nombre: RESIMEX
 tagline: Compra y valorización de metales no ferrosos
 descripcionCorta: Maximizamos el valor de tus materiales con clasificación técnica especializada.
-heroImage: ../../assets/hero/resimex-hero.png
+heroImage: ../../assets/hero/Resimex.jpg
 cardImage: ../../assets/cards/card-resimex.png
 propuestaValor:
   - titulo: Clasificación técnica

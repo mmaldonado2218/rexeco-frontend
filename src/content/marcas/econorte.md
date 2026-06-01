@@ -3,7 +3,7 @@ slug: econorte
 nombre: ECO NORTE
 tagline: Gestión integral de residuos industriales y mineros
 descripcionCorta: Años de experiencia en manejo, reciclaje y disposición final de residuos peligrosos y no peligrosos.
-heroImage: ../../assets/hero/econorte-hero.png
+heroImage: ../../assets/hero/Econorte.jpg
 cardImage: ../../assets/cards/card-econorte.png
 propuestaValor:
   - titulo: Experiencia comprobada
