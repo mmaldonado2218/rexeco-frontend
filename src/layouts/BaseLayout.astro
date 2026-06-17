@@ -1,7 +1,9 @@
 ---
 import '../styles/global.css';
+import { SITE } from '../data/site.ts';
 import Header from '../components/astro/Header.astro';
 import Footer from '../components/astro/Footer.astro';
+import SocialPopup from '../components/react/SocialPopup.tsx';
 
 interface Props {
   title?: string;
@@ -38,6 +40,11 @@ const {
       <slot />
     </main>
     <Footer />
+    <SocialPopup
+      client:load
+      whatsappUrl={SITE.whatsapp.url}
+      instagramUrl={SITE.redes.instagram}
+    />
   </body>
   <script>
     const observer = new IntersectionObserver(

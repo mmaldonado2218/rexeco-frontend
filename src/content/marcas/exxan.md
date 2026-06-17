@@ -21,21 +21,38 @@ queHacemos:
   - Gestión logística
   - Comercialización de metales reciclados
 materialesRecibimos:
-  - titulo: Chatarra ferrosa industrial
-    descripcion: Vigas, perfiles, chapas, tornería y todo tipo de acero de proceso industrial
-  - titulo: Residuos metálicos de construcción
-    descripcion: Fierros de construcción, estructuras metálicas, marcos y rejas
-  - titulo: Excedentes de producción
-    descripcion: Recortes, rebabas y sobrantes metálicos de líneas de manufactura
-  - titulo: Equipos y maquinaria en desuso
-    descripcion: Maquinaria obsoleta, motores, calderas y equipos fuera de servicio
+  - titulo: Fierro Pesado
+    descripcion: []
+  - titulo: Fierro Largo
+    descripcion: []
+  - titulo: Fierro Mixto
+    descripcion: []
+  - titulo: Fierro Lata
+    descripcion: []
+  - titulo: Fierro Oxicorte
+    descripcion: []
+  - titulo: Fierro Fundido
+    descripcion: []
+  - titulo: Fierro Manganeso
+    descripcion: []
 materialesNoRecibimos:
-  - titulo: Materiales con asbesto
-    descripcion: Fibrocemento, planchas de asbesto, materiales aislantes con amianto
-  - titulo: Residuos peligrosos sin certificación
-    descripcion: Sustancias químicas, tóxicas, corrosivas o inflamables sin documentación
-  - titulo: Metales no ferrosos
-    descripcion: Cobre, aluminio, bronce y similares — derivalos a Resimex
+  - titulo: No se compra en Exxan
+    descripcion:
+      - Aserrín
+      - Viruta
+      - Vainas (bala percutada)
+      - Monedas
+      - Baterías
+  - titulo: No ingresa a Exxan
+    descripcion:
+      - Tendido eléctrico
+      - Tendido telefónico
+      - Materiales de bienes nacionales
+  - titulo: Materiales contaminados
+    descripcion:
+      - Materiales mezclados
+      - Materiales contaminados
+      - Materiales sin categorías definidas
 mision: Gestionar grandes volúmenes de metales ferrosos mediante procesos ágiles, seguros y rentables, asegurando continuidad operativa y confianza.
 vision: Ser líderes en la gestión de metales ferrosos en Chile, destacando por eficiencia y confiabilidad.
 orden: 1

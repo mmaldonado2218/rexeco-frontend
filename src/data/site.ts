@@ -12,6 +12,7 @@ export const SITE = {
   redes: {
     linkedin: 'https://www.linkedin.com/company/rexeco-cl/',
     facebook: 'https://www.facebook.com/profile.php?id=61578924792549&locale=es_LA',
+    instagram: 'https://www.instagram.com/rexeco.cl/',
   },
   nav: [
     { label: 'Inicio', href: '/' },
@@ -25,6 +26,6 @@ export const SITE = {
     },
     { label: 'Sobre Nosotros', href: '/#nosotros' },
     { label: 'Compromiso', href: '/#eligenos' },
-    { label: 'Contacto', href: '/contacto' },
+    { label: 'Canal de Denuncias', href: '/canal-de-denuncias' },
   ],
 } as const;

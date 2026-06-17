@@ -1,11 +1,12 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import { SITE } from '../../data/site';
 import ContactForm from '../react/ContactForm';
 import instalaciones from '../../assets/hero/home-slider-1.jpg';
-import exxanCardImg from '../../assets/hero/DSC02751.jpg';
-import resimexCardImg from '../../assets/hero/DSC02799.jpg';
+import exxanCardImg from '../../assets/hero/VLK09605.jpg';
+import resimexCardImg from '../../assets/hero/DSC02751.jpg';
 import econorteCardImg from '../../assets/hero/VLK04222.jpg';
 
 interface Props {
@@ -81,7 +82,7 @@ const queHacemosIconsBySlug: Record<string, { color: string; icons: string[] }> 
 const marcaIcons = queHacemosIconsBySlug[d.slug] ?? { color: 'bg-rexeco-navy', icons: [] };
 const fallbackQueHacemosIcon = `<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>`;
 
-type MaterialRich = { titulo: string; descripcion: string };
+type MaterialRich = { titulo: string; descripcion: string | string[] };
 const recibidosRich = d.materialesRecibimos?.every(m => typeof m === 'object') ?? false;
 const recibidosRichItems = recibidosRich ? (d.materialesRecibimos as MaterialRich[]) : [];
 const recibidosSimpleItems = !recibidosRich ? (d.materialesRecibimos as string[] | undefined) : undefined;
@@ -89,6 +90,192 @@ const recibidosSimpleItems = !recibidosRich ? (d.materialesRecibimos as string[]
 const noRecibidosRich = d.materialesNoRecibimos?.every(m => typeof m === 'object') ?? false;
 const noRecibidosRichItems = noRecibidosRich ? (d.materialesNoRecibimos as MaterialRich[]) : [];
 const noRecibidosSimpleItems = !noRecibidosRich ? (d.materialesNoRecibimos as string[] | undefined) : undefined;
+
+// --- Carrusel de fotos por material (PhotoSwipe) ---
+// Cada slide necesita src/width/height. Las dimensiones se leen del ImageMetadata
+// original; getImage() genera la URL WebP optimizada (los JPG pesan 7-19MB).
+// El resultado se acumula en pswpPorCategoria (clave = título de card), que
+// alimenta el render y el script por igual. Card no presente => no clickable.
+type PswpSlide = { src: string; width: number; height: number; alt: string };
+const pswpPorCategoria: Record<string, PswpSlide[]> = {};
+// Resimex: click por ÍTEM individual (Perfil A, UBC, Offset...) -> su única foto.
+// Clave = texto exacto del ítem en el .md; valor = slide de su archivo.
+const pswpPorItem: Record<string, PswpSlide> = {};
+
+async function metaASlide(meta: ImageMetadata, alt: string): Promise<PswpSlide> {
+  const opt = await getImage({ src: meta, format: 'webp', quality: 78 });
+  return { src: opt.src, width: meta.width, height: meta.height, alt };
+}
+
+// Patrón "1 card -> 1 carpeta-categoría con N fotos". Agrupa los archivos del
+// glob por la carpeta-categoría (el segmento de path justo después de la marca),
+// sin importar si hay subcarpetas debajo, y según el mapa título->carpeta arma
+// los slides de cada card. (import.meta.glob exige string literal, así que el
+// glob entra ya resuelto, junto con el nombre de carpeta de la marca.)
+async function poblarPorCategoria(
+  glob: Record<string, { default: ImageMetadata }>,
+  marcaDir: string,
+  tituloACarpeta: Record<string, string>
+) {
+  const porCategoria: Record<string, { path: string; meta: ImageMetadata }[]> = {};
+  for (const [path, mod] of Object.entries(glob)) {
+    const partes = decodeURIComponent(path).split('/');
+    const idx = partes.indexOf(marcaDir);
+    const categoria = partes[idx + 1]; // segmento inmediatamente tras la marca
+    if (!categoria) continue;
+    (porCategoria[categoria] ??= []).push({ path, meta: mod.default });
+  }
+  for (const item of recibidosRichItems) {
+    const carpeta = tituloACarpeta[item.titulo];
+    if (!carpeta) continue;
+    const archivos = (porCategoria[carpeta] ?? [])
+      .sort((a, b) => a.path.localeCompare(b.path, 'es'));
+    if (archivos.length === 0) continue;
+    pswpPorCategoria[item.titulo] = await Promise.all(
+      archivos.map(({ meta }) => metaASlide(meta, item.titulo))
+    );
+  }
+}
+
+// --- Resimex: 2 niveles (categoría/archivo). Mapa título -> carpeta.
+// No pluralizar: "Acero inoxidable" -> "Aceros" rompe cualquier regla. ---
+if (d.slug === 'resimex' && recibidosRich) {
+  const resimexGlob = import.meta.glob<{ default: ImageMetadata }>(
+    '../../assets/catalogo_final/Resimex/**/*.{JPG,jpg,jpeg,png}',
+    { eager: true }
+  );
+  await poblarPorCategoria(resimexGlob, 'Resimex', {
+    'Aluminio': 'Aluminios',
+    'Cobre': 'Cobres',
+    'Acero inoxidable': 'Aceros',
+    'Bronce': 'Bronces',
+  });
+
+  // Click por ítem: cada opción del .md (Perfil A, UBC, 304...) abre SOLO su foto.
+  // El matching es por inclusión normalizada (sin acentos/mayúsculas/paréntesis)
+  // porque los textos del .md no calzan literal con el archivo:
+  //   "UBC (latas de aluminio)" -> "UBC.JPG"; "304" -> "Acero 304.JPG".
+  const normalizar = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '') // quita acentos (diacríticos NFD)
+      .replace(/\(.*?\)/g, '')         // quita "(latas de aluminio)"
+      .replace(/[^a-z0-9]+/gi, ' ')    // colapsa separadores
+      .trim()
+      .toLowerCase();
+
+  const archivosResimex = Object.values(resimexGlob).map((mod) => {
+    const meta = mod.default;
+    const nombre = meta.src.split('/').at(-1) ?? '';
+    return { meta, key: normalizar(decodeURIComponent(nombre).replace(/\.[^.]+$/, '')) };
+  });
+
+  // Excepciones item->archivo: typos del archivo (Calefont, Bronceo) o nombres
+  // de contenido que no calzan literal (Tubo Limpio vs Tubo de cobre). El resto
+  // resuelve solo por inclusión normalizada.
+  const RESIMEX_ALIAS: Record<string, string> = {
+    'CU Tubo': 'Tubo de cobre',
+    'CU Tercera': 'Cobre de tercera',
+    'CU Calefont': 'Calefont cobre',
+    'CU Radiadores': 'Radiador cobre',
+    'Bronce Colorado': 'Bronceo colorado',
+  };
+
+  for (const item of recibidosRichItems) {
+    const opciones = Array.isArray(item.descripcion) ? item.descripcion : [item.descripcion];
+    for (const opcion of opciones) {
+      const objetivo = normalizar(RESIMEX_ALIAS[opcion] ?? opcion);
+      if (!objetivo) continue;
+      // El nombre del archivo contiene el texto del ítem ("Acero 304" ⊃ "304"),
+      // o viceversa para nombres más cortos. Prioriza inclusión del item en archivo.
+      const match =
+        archivosResimex.find((a) => a.key.includes(objetivo)) ??
+        archivosResimex.find((a) => objetivo.includes(a.key));
+      if (match) pswpPorItem[opcion] = await metaASlide(match.meta, opcion);
+    }
+  }
+}
+
+// --- Econorte: estructura "Excedente de X/SubItem/fotos". Click por subitem:
+// cada opción del .md (Catodos, SS 304, Manganeso...) abre SU foto. El matching
+// es por PATH (carpeta-material + carpeta-subitem), no por nombre de archivo,
+// así calza aunque el archivo se llame distinto (IMG_7296, Bolones de bronce...).
+// Excepción: "Excedente de aluminio" no tiene subitems en el .md, así que su
+// foto se cuelga a nivel-card (pswpPorCategoria), estilo Exxan.
+if (d.slug === 'econorte' && recibidosRich) {
+  const econorteGlob = import.meta.glob<{ default: ImageMetadata }>(
+    '../../assets/catalogo_final/Econorte/**/*.{JPG,jpg,jpeg,png}',
+    { eager: true }
+  );
+
+  const normalizar = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '') // quita acentos (diacríticos NFD)
+      .replace(/\(.*?\)/g, '')         // quita paréntesis
+      .replace(/[^a-z0-9]+/gi, ' ')    // colapsa separadores
+      .trim()
+      .toLowerCase();
+
+  // Indexa cada archivo por los segmentos de carpeta material/subitem (los dos
+  // niveles bajo "Excedente de X/SubItem/"), ya normalizados.
+  const archivosEconorte = Object.entries(econorteGlob).map(([path, mod]) => {
+    const partes = decodeURIComponent(path).split('/');
+    const idx = partes.findIndex((p) => /^Excedente de /i.test(p));
+    return {
+      meta: mod.default,
+      path,
+      material: idx >= 0 ? normalizar(partes[idx]) : '',
+      subitem: idx >= 0 ? normalizar(partes[idx + 1] ?? '') : '',
+    };
+  });
+
+  for (const item of recibidosRichItems) {
+    const materialKey = normalizar(item.titulo);
+    const delMaterial = archivosEconorte.filter((a) => a.material === materialKey);
+
+    // Aluminio (y cualquier material sin subitems): foto a nivel-card.
+    const opciones = Array.isArray(item.descripcion) ? item.descripcion : [item.descripcion];
+    const sinSubitems = opciones.filter(Boolean).length === 0;
+    if (sinSubitems) {
+      const archivos = delMaterial.sort((a, b) => a.path.localeCompare(b.path, 'es'));
+      if (archivos.length > 0) {
+        pswpPorCategoria[item.titulo] = await Promise.all(
+          archivos.map((a) => metaASlide(a.meta, item.titulo))
+        );
+      }
+      continue;
+    }
+
+    // Resto: una foto por subitem, matcheando carpeta-subitem por inclusión.
+    for (const opcion of opciones) {
+      const objetivo = normalizar(opcion);
+      if (!objetivo) continue;
+      const match =
+        delMaterial.find((a) => a.subitem === objetivo) ??
+        delMaterial.find((a) => a.subitem.includes(objetivo)) ??
+        delMaterial.find((a) => objetivo.includes(a.subitem) && a.subitem.length > 0);
+      if (match) pswpPorItem[opcion] = await metaASlide(match.meta, opcion);
+    }
+  }
+}
+
+// --- Exxan: 2 niveles (carpeta-categoría/archivo), mismo patrón que Resimex y
+// Econorte. Cada card-categoría agrupa todas las fotos de su carpeta. Mapa
+// título -> carpeta. Fierro Oxicorte y Fierro Fundido aún no tienen fotos. ---
+if (d.slug === 'exxan' && recibidosRich) {
+  const exxanGlob = import.meta.glob<{ default: ImageMetadata }>(
+    '../../assets/catalogo_final/Exxan/**/*.{JPG,jpg,jpeg,png}',
+    { eager: true }
+  );
+  await poblarPorCategoria(exxanGlob, 'Exxan', {
+    'Fierro Pesado': 'fierro_pesado',
+    'Fierro Largo': 'fierro_largo',
+    'Fierro Mixto': 'fierro_mixto',
+    'Fierro Lata': 'fierro_lata',
+    'Fierro Manganeso': 'fierro_manganeso',
+  });
+}
 ---
 
 <!-- Descripción general -->
@@ -215,18 +402,108 @@ const noRecibidosSimpleItems = !noRecibidosRich ? (d.materialesNoRecibimos as st
               </h2>
               {recibidosRich ? (
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {recibidosRichItems.map((item) => (
-                    <div class="bg-white border-l-4 border-green-500 rounded-lg p-4 shadow-sm flex gap-4 items-start">
-                      <svg class="shrink-0 w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="46" fill="#22c55e" stroke="#15803d" stroke-width="4"/>
-                        <polyline points="26,52 44,68 74,34" fill="none" stroke="white" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <div class="min-w-0">
-                        <p class="font-heading font-bold text-green-700 text-sm uppercase tracking-wide leading-tight mb-1">{item.titulo}</p>
-                        <p class="text-rexeco-text text-xs leading-relaxed">{item.descripcion}</p>
+                  {recibidosRichItems.map((item) => {
+                    const slides = pswpPorCategoria[item.titulo] ?? [];
+                    const opciones = Array.isArray(item.descripcion)
+                      ? item.descripcion
+                      : [item.descripcion];
+                    const tieneSubitems = opciones.filter(Boolean).length > 0;
+                    // Resimex/Econorte: el click vive en cada ítem (su foto). Excepción:
+                    // un material item-level SIN subítems pero CON foto (Econorte aluminio)
+                    // cae al click a nivel-card.
+                    const marcaPorItem = d.slug === 'resimex' || d.slug === 'econorte';
+                    const porItem = marcaPorItem && tieneSubitems;
+                    const clickable = !porItem && slides.length > 0;
+                    // Marca con click a nivel-card las categorías sin fotos, para que
+                    // se note a simple vista (Exxan: Oxicorte, Fundido).
+                    const sinFotos = !porItem && !tieneSubitems && slides.length === 0;
+                    const inner = (
+                      <>
+                        <svg class="shrink-0 w-12 h-12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="50" cy="50" r="46" fill="#22c55e" stroke="#15803d" stroke-width="4"/>
+                          <polyline points="26,52 44,68 74,34" fill="none" stroke="white" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="min-w-0">
+                          <div class="flex items-center gap-2 mb-1">
+                            <p class="font-heading font-bold text-green-700 text-sm uppercase tracking-wide leading-tight">{item.titulo}</p>
+                            {clickable && (
+                              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-green-600 opacity-80 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 17a6 6 0 100-12 6 6 0 000 12zM11 8v6M8 11h6"/>
+                                </svg>
+                                Ver fotos
+                              </span>
+                            )}
+                            {sinFotos && (
+                              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M9.88 5.09A2.25 2.25 0 0111.25 4.5h1.5a2.25 2.25 0 012.122 1.5l.27.75H18a2.25 2.25 0 012.25 2.25v8.25M16.5 16.5L4.5 4.5m0 0A2.25 2.25 0 002.25 6.75v9A2.25 2.25 0 004.5 18h12"/>
+                                </svg>
+                                Sin fotos
+                              </span>
+                            )}
+                          </div>
+                          {porItem ? (
+                            /* Cada opción con foto es un botón que abre SOLO su imagen.
+                               Sin foto (Offset, Pomo...) => texto plano. */
+                            <ul class="list-disc list-inside text-rexeco-text text-xs leading-relaxed space-y-0.5 marker:text-green-500">
+                              {opciones.map((opcion) => {
+                                const slide = pswpPorItem[opcion];
+                                return slide ? (
+                                  <li class="list-none -ml-0">
+                                    <button
+                                      type="button"
+                                      data-pswp={JSON.stringify([slide])}
+                                      aria-label={`Ver foto de ${opcion}`}
+                                      class="group/item inline-flex items-center gap-1.5 text-left text-rexeco-text hover:text-green-700 cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 rounded"
+                                    >
+                                      <svg class="w-3 h-3 shrink-0 text-green-600 opacity-70 group-hover/item:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 17a6 6 0 100-12 6 6 0 000 12zM11 8v6M8 11h6"/>
+                                      </svg>
+                                      <span class="underline decoration-dotted decoration-green-400 underline-offset-2">{opcion}</span>
+                                    </button>
+                                  </li>
+                                ) : (
+                                  /* Sub-ítem sin foto: texto + indicador gris discreto. */
+                                  <li class="flex items-center gap-1.5">
+                                    <span>{opcion}</span>
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                                      <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M9.88 5.09A2.25 2.25 0 0111.25 4.5h1.5a2.25 2.25 0 012.122 1.5l.27.75H18a2.25 2.25 0 012.25 2.25v8.25M16.5 16.5L4.5 4.5m0 0A2.25 2.25 0 002.25 6.75v9A2.25 2.25 0 004.5 18h12"/>
+                                      </svg>
+                                      Sin foto
+                                    </span>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          ) : Array.isArray(item.descripcion) ? (
+                            <ul class="list-disc list-inside text-rexeco-text text-xs leading-relaxed space-y-0.5">
+                              {item.descripcion.map((opcion) => (
+                                <li>{opcion}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p class="text-rexeco-text text-xs leading-relaxed">{item.descripcion}</p>
+                          )}
+                        </div>
+                      </>
+                    );
+                    return clickable ? (
+                      <button
+                        type="button"
+                        data-pswp={JSON.stringify(slides)}
+                        aria-label={`Ver ${slides.length} ${slides.length === 1 ? 'foto' : 'fotos'} de ${item.titulo}`}
+                        class="group w-full text-left bg-white border-l-4 border-green-500 rounded-lg p-4 shadow-sm flex gap-4 items-start cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                      >
+                        {inner}
+                      </button>
+                    ) : (
+                      <div class="group bg-white border-l-4 border-green-500 rounded-lg p-4 shadow-sm flex gap-4 items-start">
+                        {inner}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <ul class="space-y-3">
@@ -259,7 +536,15 @@ const noRecibidosSimpleItems = !noRecibidosRich ? (d.materialesNoRecibimos as st
                       </svg>
                       <div class="min-w-0">
                         <p class="font-heading font-bold text-rexeco-red text-sm uppercase tracking-wide leading-tight mb-1">{item.titulo}</p>
-                        <p class="text-rexeco-text text-xs leading-relaxed">{item.descripcion}</p>
+                        {Array.isArray(item.descripcion) ? (
+                          <ul class="list-disc list-inside text-rexeco-text text-xs leading-relaxed space-y-0.5">
+                            {item.descripcion.map((opcion) => (
+                              <li>{opcion}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p class="text-rexeco-text text-xs leading-relaxed">{item.descripcion}</p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -390,3 +675,90 @@ const noRecibidosSimpleItems = !noRecibidosRich ? (d.materialesNoRecibimos as st
     </div>
   </div>
 </section>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  type PswpSlide = { src: string; width: number; height: number; alt: string };
+
+  document.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement)?.closest<HTMLElement>('[data-pswp]');
+    if (!card?.dataset.pswp) return;
+
+    let slides: PswpSlide[];
+    try {
+      slides = JSON.parse(card.dataset.pswp);
+    } catch {
+      return;
+    }
+    if (!slides.length) return;
+
+    const lightbox = new PhotoSwipeLightbox({
+      dataSource: slides,
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.92,
+    });
+
+    // Título de la foto: PhotoSwipe v5 no trae caption de fábrica. Registramos
+    // un elemento propio y leemos el texto del slide (`data.alt`, que poblamos
+    // con el nombre del ítem). Se refresca en cada cambio por si el set navega.
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp?.ui?.registerElement({
+        name: 'pswp-caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        onInit: (el, pswp) => {
+          el.className = 'pswp-caption';
+          const render = () => {
+            const texto = pswp.currSlide?.data?.alt ?? '';
+            el.innerHTML = texto;
+            el.style.display = texto ? 'block' : 'none';
+          };
+          pswp.on('change', render);
+          render();
+        },
+      });
+    });
+
+    lightbox.on('close', () => lightbox.destroy());
+    lightbox.init();
+    lightbox.loadAndOpen(0);
+  });
+</script>
+
+<style is:global>
+  /* Caption del lightbox: vive en .pswp (fuera del componente), por eso global.
+     Usa Rajdhani (--font-heading), la tipografía de marca para títulos. */
+  .pswp-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+    font-family: var(--font-heading), "Rajdhani", sans-serif;
+    font-size: clamp(1.05rem, 1rem + 1vw, 1.6rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Acento de marca: una línea roja corta encima del texto. */
+  .pswp-caption::before {
+    content: "";
+    display: block;
+    width: 32px;
+    height: 3px;
+    margin: 0 auto 10px;
+    border-radius: 2px;
+    background: var(--color-rexeco-red, #CC0A26);
+  }
+</style>

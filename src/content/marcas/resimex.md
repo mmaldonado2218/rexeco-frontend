@@ -21,23 +21,51 @@ queHacemos:
   - Valorización
   - Exportación
 materialesRecibimos:
-  - titulo: Cobre
-    descripcion: Cables, tuberías, piezas eléctricas y todo tipo de cobre en distintos estados
   - titulo: Aluminio
-    descripcion: Perfiles, chapas, latas, piezas de fundición y aluminio de proceso industrial
+    descripcion:
+      - Perfil A
+      - Perfil B
+      - UBC (latas de aluminio)
+      - Offset
+      - Duro Lata
+      - Duro
+      - Pomo
+      - Radiador Mixto
+  - titulo: Cobre
+    descripcion:
+      - CU Tubo
+      - CU Tercera
+      - CU Calefont
+      - CU Radiadores
   - titulo: Bronce
-    descripcion: Piezas mecánicas, válvulas, accesorios y bronce de todo tipo
+    descripcion:
+      - Bronce Amarillo
+      - Bronce Colorado
+      - Bronce Contaminado
+      - Latón
   - titulo: Acero inoxidable
-    descripcion: Estructuras, equipos de cocina industrial, tuberías y excedentes de producción
-  - titulo: Otros metales no ferrosos
-    descripcion: Zinc, plomo, níquel y aleaciones especiales con valor de reciclaje
+    descripcion:
+      - "304"
+      - "316"
+      - "201"
 materialesNoRecibimos:
-  - titulo: Metales ferrosos
-    descripcion: Hierro, acero y chatarra ferrosa en general — derivalos a Exxan
-  - titulo: Residuos peligrosos sin certificación
-    descripcion: Sustancias químicas, tóxicas, corrosivas o inflamables sin documentación
-  - titulo: Materiales contaminados sin tratamiento
-    descripcion: Metales con aceites, pinturas o sustancias que requieran tratamiento previo
+  - titulo: No se compra en Resimex
+    descripcion:
+      - Aserrín
+      - Viruta
+      - Vainas (bala percutada)
+      - Monedas
+      - Baterías
+  - titulo: No ingresa a Resimex
+    descripcion:
+      - Tendido eléctrico
+      - Tendido telefónico
+      - Materiales de bienes nacionales
+  - titulo: Materiales contaminados
+    descripcion:
+      - Materiales mezclados
+      - Materiales contaminados
+      - Materiales sin categorías definidas
 mision: Maximizar el valor de metales no ferrosos mediante clasificación técnica, gestión eficiente y comercialización estratégica.
 vision: Ser líderes en valorización de metales no ferrosos en Chile, destacando por precisión y especialización.
 orden: 2

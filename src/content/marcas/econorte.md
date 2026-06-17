@@ -20,14 +20,42 @@ queHacemos:
   - Transporte de los Residuos (con resolución sanitaria)
   - Venta Nacional e Internacional de los materiales reciclados
 materialesRecibimos:
-  - titulo: Residuos industriales peligrosos certificados
-    descripcion: Solventes, aceites, pinturas y sustancias peligrosas con documentación vigente
-  - titulo: Residuos mineros
-    descripcion: Escorias, relaves y residuos de procesos extractivos y de concentración
-  - titulo: Metales reciclables en general
-    descripcion: Ferrosos, no ferrosos y aleaciones provenientes de procesos industriales
-  - titulo: Excedentes de procesos industriales
-    descripcion: Subproductos, recortes y materiales fuera de especificación de líneas de producción
+  - titulo: Excedente de cobre
+    descripcion:
+      - Catodos
+      - Nodulos
+      - Barras de cobre
+  - titulo: Excedente de acero inoxidable
+    descripcion:
+      - SS 304
+      - SS 316
+  - titulo: Excedente de fierro
+    descripcion:
+      - Bolas de molino
+      - Manganeso
+      - Cromo Moly
+  - titulo: Excedente de plomo
+    descripcion: []
+  - titulo: Excedente de aluminio
+    descripcion: []
+materialesNoRecibimos:
+  - titulo: No se compra en Econorte
+    descripcion:
+      - Aserrín
+      - Viruta
+      - Vainas (bala percutada)
+      - Monedas
+      - Baterías
+  - titulo: No ingresa a Econorte
+    descripcion:
+      - Tendido eléctrico
+      - Tendido telefónico
+      - Materiales de bienes nacionales
+  - titulo: Materiales contaminados
+    descripcion:
+      - Materiales mezclados
+      - Materiales contaminados
+      - Materiales sin categorías definidas
 mision: Realizar una gestión integral de reciclaje, vigilando la seguridad y bienestar de nuestro capital humano, siendo un aliado estratégico de nuestros clientes para la disposición responsable de sus residuos.
 vision: Convertirnos en referente nacional en la gestión de residuos industriales y mineros, con procesos seguros, certificados y ambientalmente responsables.
 orden: 3

@@ -8,6 +8,11 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   integrations: [react()],
 
+  // Preserve old contact URL after renaming the page to Canal de Denuncias.
+  redirects: {
+    '/contacto': '/canal-de-denuncias',
+  },
+
   vite: {
     plugins: [tailwindcss()]
   }
