@@ -306,26 +306,38 @@ if (d.slug === 'exxan' && recibidosRich) {
       <!-- Imagen secundaria + CTA -->
       <div data-animate="right" class="space-y-6">
         {d.slug === 'exxan' ? (
-          <img
-            src={exxanCardImg.src}
+          <Image
+            src={exxanCardImg}
             alt={d.nombre}
             class="w-full h-72 object-cover rounded-xl"
             style="object-position: center 33%"
+            widths={[400, 700]}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            format="webp"
+            quality={78}
             loading="lazy"
           />
         ) : d.slug === 'resimex' ? (
-          <img
-            src={resimexCardImg.src}
+          <Image
+            src={resimexCardImg}
             alt={d.nombre}
             class="w-full h-72 object-cover rounded-xl"
+            widths={[400, 700]}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            format="webp"
+            quality={78}
             loading="lazy"
           />
         ) : d.slug === 'econorte' ? (
-          <img
-            src={econorteCardImg.src}
+          <Image
+            src={econorteCardImg}
             alt={d.nombre}
             class="w-full h-72 object-cover rounded-xl"
             style="object-position: center 70%"
+            widths={[400, 700]}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            format="webp"
+            quality={78}
             loading="lazy"
           />
         ) : (
@@ -335,6 +347,8 @@ if (d.slug === 'exxan' && recibidosRich) {
             class="w-full h-72 object-cover rounded-xl"
             widths={[400, 700]}
             sizes="(max-width: 1024px) 100vw, 50vw"
+            format="webp"
+            quality={78}
           />
         )}
         <div class="bg-rexeco-dark p-6 rounded-xl">

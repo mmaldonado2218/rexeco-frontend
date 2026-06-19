@@ -14,6 +14,8 @@ export default function ContactForm() {
   const [form, setForm] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const e: Partial<FormState> = {};
@@ -26,9 +28,25 @@ export default function ContactForm() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) setSubmitted(true);
+    if (!validate()) return;
+
+    setSending(true);
+    setSendError(null);
+    try {
+      const res = await fetch('/enviar.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Request failed');
+      setSubmitted(true);
+    } catch {
+      setSendError('No pudimos enviar tu mensaje. Inténtalo nuevamente en unos minutos.');
+    } finally {
+      setSending(false);
+    }
   };
 
   const field = (key: keyof FormState) => ({
@@ -50,7 +68,7 @@ export default function ContactForm() {
           Gracias por contactarnos. Nos comunicaremos contigo a la brevedad.
         </p>
         <button
-          onClick={() => { setForm(initial); setSubmitted(false); }}
+          onClick={() => { setForm(initial); setSubmitted(false); setSendError(null); }}
           className="font-heading font-semibold text-sm uppercase tracking-wide text-rexeco-red hover:text-white transition-colors"
         >
           Enviar otro mensaje
@@ -130,11 +148,16 @@ export default function ContactForm() {
         />
       </div>
 
+      {sendError && (
+        <p className="text-rexeco-red text-sm" role="alert">{sendError}</p>
+      )}
+
       <button
         type="submit"
-        className="w-full sm:w-auto bg-rexeco-red hover:bg-red-700 text-white font-heading font-bold uppercase tracking-widest px-10 py-4 text-sm transition-colors"
+        disabled={sending}
+        className="w-full sm:w-auto bg-rexeco-red hover:bg-red-700 text-white font-heading font-bold uppercase tracking-widest px-10 py-4 text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        Enviar mensaje
+        {sending ? 'Enviando…' : 'Enviar mensaje'}
       </button>
     </form>
   );

@@ -2,6 +2,10 @@
 dist/
 .output/
 
+# Deploy package (regenerable artifact, not source)
+rexeco-deploy-package/
+rexeco-deploy-package.zip
+
 # Dependencies
 node_modules/
 
@@ -12,6 +16,9 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# SMTP credentials for the contact form (real file, never committed)
+config-smtp.php
 
 # OS
 .DS_Store
