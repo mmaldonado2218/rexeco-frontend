@@ -2,7 +2,7 @@ export const SITE = {
   nombre: 'Grupo Rexeco',
   descripcion:
     'Grupo de empresas especializadas en reciclaje y gestión integral de residuos, comprometidos con la economía circular y el cuidado del medio ambiente.',
-  email: 'contacto@gruporexeco.com',
+  email: 'contacto@rexeco.cl',
   whatsapp: {
     numero: '+56 9 3438 4860',
     url: 'https://api.whatsapp.com/send?phone=56934384860&text=Hola!%20Quiero%20Contactarme',
