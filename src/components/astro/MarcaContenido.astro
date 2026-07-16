@@ -261,19 +261,23 @@ if (d.slug === 'econorte' && recibidosRich) {
 }
 
 // --- Exxan: 2 niveles (carpeta-categoría/archivo), mismo patrón que Resimex y
-// Econorte. Cada card-categoría agrupa todas las fotos de su carpeta. Mapa
-// título -> carpeta. Fierro Oxicorte y Fierro Fundido aún no tienen fotos. ---
+// Econorte. Cada card-categoría agrupa todas las fotos de su carpeta.
+// OJO: los nombres de carpeta NO describen su contenido — las fotos se
+// cargaron cruzadas de origen (fierro_largo guarda las de corto, fierro_lata
+// las de mixto, etc.). El mapa corrige el cruce; se dejan las carpetas como
+// están para no mover los archivos. Fierro Manganeso y Fierro Fundido aún no
+// tienen fotos. ---
 if (d.slug === 'exxan' && recibidosRich) {
   const exxanGlob = import.meta.glob<{ default: ImageMetadata }>(
     '../../assets/catalogo_final/Exxan/**/*.{JPG,jpg,jpeg,png}',
     { eager: true }
   );
   await poblarPorCategoria(exxanGlob, 'Exxan', {
-    'Fierro Pesado': 'fierro_pesado',
-    'Fierro Largo': 'fierro_largo',
-    'Fierro Mixto': 'fierro_mixto',
-    'Fierro Lata': 'fierro_lata',
-    'Fierro Manganeso': 'fierro_manganeso',
+    'Fierro Corto': 'fierro_largo',
+    'Fierro Largo': 'fierro_pesado',
+    'Fierro Mixto': 'fierro_lata',
+    'Fierro Lata': 'fierro_mixto',
+    'Fierro Oxicorte': 'fierro_manganeso',
   });
 }
 ---

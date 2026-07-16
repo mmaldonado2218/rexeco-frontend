@@ -21,7 +21,7 @@ queHacemos:
   - Gestión logística
   - Comercialización de metales reciclados
 materialesRecibimos:
-  - titulo: Fierro Pesado
+  - titulo: Fierro Corto
     descripcion: []
   - titulo: Fierro Largo
     descripcion: []
