@@ -98,9 +98,10 @@ const noRecibidosSimpleItems = !noRecibidosRich ? (d.materialesNoRecibimos as st
 // alimenta el render y el script por igual. Card no presente => no clickable.
 type PswpSlide = { src: string; width: number; height: number; alt: string };
 const pswpPorCategoria: Record<string, PswpSlide[]> = {};
-// Resimex: click por ÍTEM individual (Perfil A, UBC, Offset...) -> su única foto.
-// Clave = texto exacto del ítem en el .md; valor = slide de su archivo.
-const pswpPorItem: Record<string, PswpSlide> = {};
+// Click por ÍTEM individual (Perfil A, UBC, Cromo Moly...) -> sus fotos.
+// Clave = texto exacto del ítem en el .md. Resimex tiene 1 archivo por ítem;
+// Econorte puede tener varios en la carpeta del subítem (Cátodos, Cromo Moly).
+const pswpPorItem: Record<string, PswpSlide[]> = {};
 
 async function metaASlide(meta: ImageMetadata, alt: string): Promise<PswpSlide> {
   const opt = await getImage({ src: meta, format: 'webp', quality: 78 });
@@ -112,17 +113,22 @@ async function metaASlide(meta: ImageMetadata, alt: string): Promise<PswpSlide> 
 // sin importar si hay subcarpetas debajo, y según el mapa título->carpeta arma
 // los slides de cada card. (import.meta.glob exige string literal, así que el
 // glob entra ya resuelto, junto con el nombre de carpeta de la marca.)
+// `excluir` lista nombres de archivo que se descartan del carrusel sin borrarlos
+// del repo (fotos que no corresponden al material de su carpeta).
 async function poblarPorCategoria(
   glob: Record<string, { default: ImageMetadata }>,
   marcaDir: string,
-  tituloACarpeta: Record<string, string>
+  tituloACarpeta: Record<string, string>,
+  excluir: string[] = []
 ) {
+  const excluidos = new Set(excluir);
   const porCategoria: Record<string, { path: string; meta: ImageMetadata }[]> = {};
   for (const [path, mod] of Object.entries(glob)) {
     const partes = decodeURIComponent(path).split('/');
     const idx = partes.indexOf(marcaDir);
     const categoria = partes[idx + 1]; // segmento inmediatamente tras la marca
     if (!categoria) continue;
+    if (excluidos.has(partes.at(-1)!)) continue;
     (porCategoria[categoria] ??= []).push({ path, meta: mod.default });
   }
   for (const item of recibidosRichItems) {
@@ -164,10 +170,12 @@ if (d.slug === 'resimex' && recibidosRich) {
       .trim()
       .toLowerCase();
 
-  const archivosResimex = Object.values(resimexGlob).map((mod) => {
-    const meta = mod.default;
-    const nombre = meta.src.split('/').at(-1) ?? '';
-    return { meta, key: normalizar(decodeURIComponent(nombre).replace(/\.[^.]+$/, '')) };
+  // La clave sale del path del glob (el nombre en disco), NO de meta.src: en
+  // build meta.src ya trae el hash ("Duro lata.JUUmkiag.JPG") y ningún nombre
+  // calzaría exacto.
+  const archivosResimex = Object.entries(resimexGlob).map(([path, mod]) => {
+    const nombre = decodeURIComponent(path).split('/').at(-1) ?? '';
+    return { meta: mod.default, key: normalizar(nombre.replace(/\.[^.]+$/, '')) };
   });
 
   // Excepciones item->archivo: typos del archivo (Calefont, Bronceo) o nombres
@@ -186,12 +194,15 @@ if (d.slug === 'resimex' && recibidosRich) {
     for (const opcion of opciones) {
       const objetivo = normalizar(RESIMEX_ALIAS[opcion] ?? opcion);
       if (!objetivo) continue;
-      // El nombre del archivo contiene el texto del ítem ("Acero 304" ⊃ "304"),
-      // o viceversa para nombres más cortos. Prioriza inclusión del item en archivo.
+      // Exacto primero: sin él, "Duro" se lleva "Duro lata.JPG" por inclusión y
+      // ambos ítems terminan mostrando la misma foto. Si no hay exacto, el nombre
+      // del archivo contiene el texto del ítem ("Acero 304" ⊃ "304"), o viceversa
+      // para nombres más cortos.
       const match =
+        archivosResimex.find((a) => a.key === objetivo) ??
         archivosResimex.find((a) => a.key.includes(objetivo)) ??
         archivosResimex.find((a) => objetivo.includes(a.key));
-      if (match) pswpPorItem[opcion] = await metaASlide(match.meta, opcion);
+      if (match) pswpPorItem[opcion] = [await metaASlide(match.meta, opcion)];
     }
   }
 }
@@ -247,15 +258,26 @@ if (d.slug === 'econorte' && recibidosRich) {
       continue;
     }
 
-    // Resto: una foto por subitem, matcheando carpeta-subitem por inclusión.
+    // Resto: TODAS las fotos de la carpeta del subítem (Cátodos Usados y Cromo
+    // Moly traen varias), resolviendo primero por nombre exacto de carpeta.
     for (const opcion of opciones) {
       const objetivo = normalizar(opcion);
       if (!objetivo) continue;
-      const match =
-        delMaterial.find((a) => a.subitem === objetivo) ??
-        delMaterial.find((a) => a.subitem.includes(objetivo)) ??
-        delMaterial.find((a) => objetivo.includes(a.subitem) && a.subitem.length > 0);
-      if (match) pswpPorItem[opcion] = await metaASlide(match.meta, opcion);
+      const porSubitem = (predicado: (a: (typeof delMaterial)[number]) => boolean) => {
+        const encontrados = delMaterial.filter(predicado);
+        return encontrados.length > 0 ? encontrados : null;
+      };
+      const archivos =
+        porSubitem((a) => a.subitem === objetivo) ??
+        porSubitem((a) => a.subitem.includes(objetivo)) ??
+        porSubitem((a) => objetivo.includes(a.subitem) && a.subitem.length > 0);
+      if (archivos) {
+        pswpPorItem[opcion] = await Promise.all(
+          archivos
+            .sort((a, b) => a.path.localeCompare(b.path, 'es'))
+            .map((a) => metaASlide(a.meta, opcion))
+        );
+      }
     }
   }
 }
@@ -272,13 +294,20 @@ if (d.slug === 'exxan' && recibidosRich) {
     '../../assets/catalogo_final/Exxan/**/*.{JPG,jpg,jpeg,png}',
     { eager: true }
   );
-  await poblarPorCategoria(exxanGlob, 'Exxan', {
-    'Fierro Corto': 'fierro_largo',
-    'Fierro Largo': 'fierro_pesado',
-    'Fierro Mixto': 'fierro_lata',
-    'Fierro Lata': 'fierro_mixto',
-    'Fierro Oxicorte': 'fierro_manganeso',
-  });
+  await poblarPorCategoria(
+    exxanGlob,
+    'Exxan',
+    {
+      'Fierro Corto': 'fierro_largo',
+      'Fierro Largo': 'fierro_pesado',
+      'Fierro Mixto': 'fierro_lata',
+      'Fierro Lata': 'fierro_mixto',
+      'Fierro Oxicorte': 'fierro_manganeso',
+    },
+    // Fotos que no corresponden al material de la card que las mostraba:
+    // Largo.jpg y VLK00634.jpg salían en Fierro Corto; VLK00635.jpg en Fierro Largo.
+    ['Largo.jpg', 'VLK00634.jpg', 'VLK00635.jpg']
+  );
 }
 ---
 
@@ -462,17 +491,17 @@ if (d.slug === 'exxan' && recibidosRich) {
                             )}
                           </div>
                           {porItem ? (
-                            /* Cada opción con foto es un botón que abre SOLO su imagen.
-                               Sin foto (Offset, Pomo...) => texto plano. */
+                            /* Cada opción con foto es un botón que abre SOLO sus
+                               imágenes. Sin foto (Offset, Pomo...) => texto plano. */
                             <ul class="list-disc list-inside text-rexeco-text text-xs leading-relaxed space-y-0.5 marker:text-green-500">
                               {opciones.map((opcion) => {
-                                const slide = pswpPorItem[opcion];
-                                return slide ? (
+                                const slidesItem = pswpPorItem[opcion] ?? [];
+                                return slidesItem.length > 0 ? (
                                   <li class="list-none -ml-0">
                                     <button
                                       type="button"
-                                      data-pswp={JSON.stringify([slide])}
-                                      aria-label={`Ver foto de ${opcion}`}
+                                      data-pswp={JSON.stringify(slidesItem)}
+                                      aria-label={`Ver ${slidesItem.length} ${slidesItem.length === 1 ? 'foto' : 'fotos'} de ${opcion}`}
                                       class="group/item inline-flex items-center gap-1.5 text-left text-rexeco-text hover:text-green-700 cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 rounded"
                                     >
                                       <svg class="w-3 h-3 shrink-0 text-green-600 opacity-70 group-hover/item:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">

@@ -1,6 +1,58 @@
 ---
 import { Image } from 'astro:assets';
-import gerenteImg from '../../assets/people/Jefaturas.jpg';
+import type { ImageMetadata } from 'astro';
+
+// Carrusel de departamentos. Cada slide sale de una foto en
+// assets/people/departamentos/ cuyo nombre de archivo calza con el `slug`.
+// Un departamento sin foto simplemente no se muestra: así basta con dejar
+// caer "finanzas.jpg", "contabilidad.jpg" o "informatica.jpg" en esa carpeta
+// para que aparezca su slide, sin tocar código.
+const departamentos = [
+  {
+    slug: 'jefaturas',
+    nombre: 'Nuestras Jefaturas',
+    bajada: 'Comprometidos con un mundo mejor',
+    // Encuadre propio de esta foto: el grupo queda chico en el original.
+    imgClass: 'scale-[1.3]',
+  },
+  {
+    slug: 'finanzas',
+    nombre: 'Finanzas',
+    bajada: 'Gestión financiera y control de costos de todo el grupo',
+  },
+  {
+    slug: 'contabilidad',
+    nombre: 'Contabilidad',
+    bajada: 'Registro contable y cumplimiento tributario',
+  },
+  {
+    slug: 'informatica',
+    nombre: 'Informática',
+    bajada: 'Sistemas, infraestructura y soporte tecnológico',
+  },
+];
+
+const fotosGlob = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/people/departamentos/*.{jpg,JPG,jpeg,JPEG,png,PNG}',
+  { eager: true }
+);
+
+// Índice nombre-de-archivo (sin extensión, normalizado) -> ImageMetadata.
+const fotosPorSlug: Record<string, ImageMetadata> = {};
+for (const [path, mod] of Object.entries(fotosGlob)) {
+  const nombre = decodeURIComponent(path).split('/').at(-1)!.replace(/\.[^.]+$/, '');
+  const slug = nombre
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+  fotosPorSlug[slug] = mod.default;
+}
+
+const slides = departamentos
+  .map((dep) => ({ ...dep, img: fotosPorSlug[dep.slug] }))
+  .filter((dep) => dep.img);
+
+const hayCarrusel = slides.length > 1;
 ---
 
 <section class="py-20 lg:py-28 bg-white">
@@ -10,7 +62,7 @@ import gerenteImg from '../../assets/people/Jefaturas.jpg';
       <!-- Texto -->
       <div data-animate="left" class="order-2 lg:order-1">
         <p class="text-rexeco-red font-heading font-semibold text-sm uppercase tracking-[0.2em] mb-4">
-          NUESTRAS JEFATURAS
+          NUESTRO EQUIPO
         </p>
         <h2 class="font-heading font-bold text-rexeco-dark text-3xl sm:text-4xl lg:text-5xl leading-tight mb-8">
           Nos dedicamos a la gestión de residuos metálicos ferrosos y no ferrosos, de forma absolutamente responsable.
@@ -55,21 +107,80 @@ import gerenteImg from '../../assets/people/Jefaturas.jpg';
         </div>
       </div>
 
-      <!-- Imagen jefaturas -->
+      <!-- Carrusel de departamentos -->
       <div data-animate="right" class="order-1 lg:order-2 flex justify-center lg:justify-end">
-        <div class="w-full overflow-hidden rounded-2xl">
-          <div class="aspect-[16/9] overflow-hidden">
-            <Image
-              src={gerenteImg}
-              alt="Equipo de Jefaturas de Grupo Rexeco"
-              width={1000}
-              height={625}
-              class="w-full h-full object-cover object-center scale-[1.3]"
-            />
+        <div
+          id="deptos-carrusel"
+          class="w-full overflow-hidden rounded-2xl"
+          data-carrusel={hayCarrusel ? 'true' : 'false'}
+        >
+          <div class="relative aspect-[16/9] overflow-hidden">
+            {slides.map((dep, i) => (
+              <div
+                class={`depto-slide absolute inset-0 transition-opacity duration-700 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
+                aria-hidden={i !== 0 ? 'true' : 'false'}
+              >
+                <Image
+                  src={dep.img!}
+                  alt={`${dep.nombre} – Grupo Rexeco`}
+                  width={1000}
+                  height={625}
+                  class={`w-full h-full object-cover object-center ${dep.imgClass ?? ''}`}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                />
+              </div>
+            ))}
+
+            {hayCarrusel && (
+              <>
+                <button
+                  id="deptos-prev"
+                  aria-label="Departamento anterior"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors rounded-full"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  id="deptos-next"
+                  aria-label="Departamento siguiente"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors rounded-full"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
           </div>
-          <div class="bg-rexeco-dark text-white px-6 py-5">
-            <p class="font-heading font-bold text-lg uppercase tracking-widest">Grupo Rexeco</p>
-            <p class="font-heading font-semibold text-white text-sm uppercase tracking-wide mt-1">Comprometidos con un mundo mejor</p>
+
+          <div class="bg-rexeco-dark text-white px-6 py-5 flex items-center justify-between gap-4">
+            <!-- Los captions se apilan en la misma celda de grid para que el
+                 cruce sea un fundido a la par de la foto (no un salto seco). -->
+            <div class="grid min-w-0">
+              {slides.map((dep, i) => (
+                <div
+                  class={`depto-caption col-start-1 row-start-1 transition-opacity duration-300 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
+                  aria-hidden={i !== 0 ? 'true' : 'false'}
+                >
+                  <p class="font-heading font-bold text-lg uppercase tracking-widest">{dep.nombre}</p>
+                  <p class="font-heading font-semibold text-white text-sm uppercase tracking-wide mt-1">{dep.bajada}</p>
+                </div>
+              ))}
+            </div>
+
+            {hayCarrusel && (
+              <div class="flex gap-2 shrink-0">
+                {slides.map((dep, i) => (
+                  <button
+                    class={`depto-dot h-1 w-6 transition-all duration-300 ${i === 0 ? 'bg-rexeco-red' : 'bg-white/40 hover:bg-white/70'}`}
+                    aria-label={`Ir a ${dep.nombre}`}
+                    data-index={String(i)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -77,3 +188,54 @@ import gerenteImg from '../../assets/people/Jefaturas.jpg';
     </div>
   </div>
 </section>
+
+<script>
+  const carrusel = document.getElementById('deptos-carrusel');
+  if (carrusel?.dataset.carrusel === 'true') {
+    const INTERVAL = 7000;
+    const slides = carrusel.querySelectorAll<HTMLElement>('.depto-slide');
+    const captions = carrusel.querySelectorAll<HTMLElement>('.depto-caption');
+    const dots = carrusel.querySelectorAll<HTMLElement>('.depto-dot');
+    let current = 0;
+    let timer: ReturnType<typeof setInterval>;
+    let swapCaption: ReturnType<typeof setTimeout>;
+
+    function goTo(index: number) {
+      slides[current].classList.replace('opacity-100', 'opacity-0');
+      slides[current].setAttribute('aria-hidden', 'true');
+      captions[current].classList.replace('opacity-100', 'opacity-0');
+      captions[current].setAttribute('aria-hidden', 'true');
+      dots[current].classList.remove('bg-rexeco-red');
+      dots[current].classList.add('bg-white/40');
+
+      current = ((index % slides.length) + slides.length) % slides.length;
+
+      slides[current].classList.replace('opacity-0', 'opacity-100');
+      slides[current].setAttribute('aria-hidden', 'false');
+      dots[current].classList.remove('bg-white/40');
+      dots[current].classList.add('bg-rexeco-red');
+
+      // El caption entra recién cuando el saliente terminó de desvanecerse:
+      // están apilados en la misma celda y superponerlos deja el texto ilegible.
+      clearTimeout(swapCaption);
+      swapCaption = setTimeout(() => {
+        captions[current].classList.replace('opacity-0', 'opacity-100');
+        captions[current].setAttribute('aria-hidden', 'false');
+      }, 300);
+    }
+
+    const startTimer = () => { timer = setInterval(() => goTo(current + 1), INTERVAL); };
+    const resetTimer = () => { clearInterval(timer); startTimer(); };
+
+    document.getElementById('deptos-prev')?.addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+    document.getElementById('deptos-next')?.addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => { goTo(Number(dot.dataset.index)); resetTimer(); });
+    });
+
+    carrusel.addEventListener('mouseenter', () => clearInterval(timer));
+    carrusel.addEventListener('mouseleave', startTimer);
+
+    startTimer();
+  }
+</script>

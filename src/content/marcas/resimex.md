@@ -31,6 +31,7 @@ materialesRecibimos:
       - Duro
       - Pomo
       - Radiador Mixto
+      - Radiador Aluminio
   - titulo: Cobre
     descripcion:
       - CU Tubo

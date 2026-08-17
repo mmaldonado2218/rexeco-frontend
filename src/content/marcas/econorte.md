@@ -22,7 +22,7 @@ queHacemos:
 materialesRecibimos:
   - titulo: Excedente de cobre
     descripcion:
-      - Catodos
+      - Catodos Usados
       - Nodulos
       - Barras de cobre
   - titulo: Excedente de acero inoxidable
